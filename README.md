@@ -1,6 +1,6 @@
 # Codebase of the work submitted for ICASSP 2023 : 
 # HOW TO (VIRTUALLY) TRAIN YOUR SOUND SOURCE LOCALIZER 
-## Authors: Prerak SRIVASTAVA, Antoine Deleforge, Archontis Politis, Emmanuel Vincent.
+### Authors: Prerak SRIVASTAVA, Antoine Deleforge, Archontis Politis, Emmanuel Vincent.
 
 ### ./Data generation  
 
