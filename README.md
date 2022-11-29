@@ -2,7 +2,7 @@
 # HOW TO (VIRTUALLY) TRAIN YOUR SOUND SOURCE LOCALIZER 
 ## Authors: Prerak SRIVASTAVA, Antoine Deleforge, Archontis Politis, Emmanuel Vincent.
 
-###**./Data generation** : Scripts for generation of room parameters, Room impulse responses and speech mixtures.
+### **./Data generation** : Scripts for generation of room parameters, Room impulse responses and speech mixtures.
 
 **a) generate_simultor_params.py** 
 This python file depends on params.yml file, from where many different parameters can be simulation tweaked.
@@ -28,7 +28,7 @@ Creates noisy mixtures from the generated room impulse responses **c)**
 
 All the rest of the files in this dir are utility files. 
 
-###**./retreive_real_data**  
+### **./retreive_real_data**  
 Consists scripts that retreive real data if provided with correct directory of the respective real datasets.
 
 **a) get_DIRHA_data.py**
@@ -39,17 +39,17 @@ Consists scripts that retreive real data if provided with correct directory of t
 
 The output is saved as a .npz format, for easy access using numpy.
 
-###**./train_scripts** 
+### **./train_scripts** 
 Consists of all the scripts that are required for training the DOA system based on the generated simulated dataset. 
 We used off the shelve DOA architecture as presented in this paper : https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=9357962
 
 
-###**./srp_phat** 
+### **./srp_phat** 
 SRP-PHAT scripts used for setting a baseline.
 Can be used with simulated and real datasets [DIRHA, VOICEHOME2 and STARSS22]
 
 
-###**./test_scripts** 
+### **./test_scripts** 
 Consists of all the scripts that are used for testing the DOA estimation network on simulated and real datasets.
 
 
