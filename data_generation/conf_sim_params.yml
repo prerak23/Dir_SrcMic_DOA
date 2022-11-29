@@ -1,7 +1,0 @@
-simulation_params:
-  air_absorption: true
-  fs: 16000
-  max_order: 20
-  min_phase: false
-  ray_tracing: false
-  referencefrequency: 125
