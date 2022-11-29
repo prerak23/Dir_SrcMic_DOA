@@ -2,7 +2,8 @@
 # HOW TO (VIRTUALLY) TRAIN YOUR SOUND SOURCE LOCALIZER 
 ## Authors: Prerak SRIVASTAVA, Antoine Deleforge, Archontis Politis, Emmanuel Vincent.
 
-### ./Data generation : Scripts for generation of room parameters, Room impulse responses and speech mixtures.
+### ./Data generation  
+Scripts for generation of room parameters, Room impulse responses and speech mixtures.
 
 **a) generate_simultor_params.py** 
 This python file depends on params.yml file, from where many different parameters can be simulation tweaked.
