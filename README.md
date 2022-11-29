@@ -3,6 +3,7 @@
 ## Authors: Prerak SRIVASTAVA, Antoine Deleforge, Archontis Politis, Emmanuel Vincent.
 
 ### ./Data generation  
+
 Scripts for generation of room parameters, Room impulse responses and speech mixtures.
 
 **a) generate_simultor_params.py** 
