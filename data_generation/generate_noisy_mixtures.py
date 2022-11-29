@@ -13,6 +13,9 @@ import math
 import acoustics
 import sys
 
+####################################################################################
+# Please update all the paths according to your system before launching the script #
+####################################################################################
 
 # Train speech data 100000
 # root_speech_data='/srv/storage/talc@talc-data.nancy/multispeech/corpus/speech_recognition/LibriSpeech/train-clean-360/'
@@ -24,7 +27,7 @@ root_ssn_data = "/srv/storage/talc@talc-data.nancy/multispeech/corpus/speech_rec
 # Test speech data
 # root_speech_test_data='/srv/storage/talc@talc-data.nancy/multispeech/corpus/speech_recognition/LibriSpeech/test-clean/'
 
-# RIR Data
+# RIR Data : Simulate RIRs datasets
 rir_data_path = "/srv/storage/talc3@talc-data.nancy/multispeech/calcul/users/psrivast/ICASSP/dcase_arr/EM_32/generated_rirs_EM_32_rooms_"
 
 
@@ -37,6 +40,7 @@ path_speech = "/srv/storage/talc@talc-data.nancy/multispeech/corpus/speech_recog
 speech_files = []
 num = 0
 
+#Process in batch of 100 rooms each
 
 parallel_batch_no = int(sys.argv[1])
 

@@ -1,0 +1,16 @@
+Number_of_rooms: 1000
+Realistic_walls: true
+air_absorption: true
+fs: 16000
+humidity: 0.42
+max_order: 20
+min_phase: false
+name_of_the_dataset: '0000'
+no_of_rec_room: 1
+no_of_src_room: 3
+ray_tracing: false
+receiver_dirs: ["AKG_C414K","AKG_C414K"]
+reference_freq: 125
+saftey_distance: 0.2
+source_dir_list: []
+temprature: 20.0

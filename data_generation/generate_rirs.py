@@ -135,12 +135,13 @@ dir_obj_Dmic_2 = DIRPATRir(
     fs=16000,
 )
 
+#Process in batch of 100 rooms each
 
-parallel_batch_no = int(sys.argv[1])
+parallel_batch_no = int(sys.argv[1]) #The script take in argument the batch id, for example : in 20000 rooms there will be 200 batch ids for every batch of 100 rooms.
 
-no_of_rooms = 20000
-no_of_source = 3
-parallel_jobs = 100
+no_of_rooms = 20000  # Total number of rooms
+no_of_source = 3  # Number of source per room
+parallel_jobs = 100 # Parallel jobs, 100 rooms each
 divided_rooms = []
 divi_arr = []
 
@@ -152,7 +153,8 @@ for divi in range(no_of_rooms + 1):
         divided_rooms.append(divi_arr[:-1])
         divi_arr = []
         divi_arr.append(divi)
-print(divided_rooms)
+
+#Divided rooms [[0,99],[100,199],[200,299]] etc.
 
 file_name_rirs = (
     "/srv/storage/talc3@talc-data.nancy/multispeech/calcul/users/psrivast/ICASSP/dcase_arr/EM_32/generated_rirs_EM_32_rooms_"
@@ -177,6 +179,7 @@ rirs_save = Output_file.create_group("rirs")
 
 rirs_save_anno = Output_anno_file.create_group("rirs_save_anno")
 
+#Open simulation parameter files.
 
 with open(
     "/home/psrivastava/source_localization/doa_estimation/dcase_mic_arr/data_generation/EM_32/conf_room_setup_EM32.yml"
@@ -298,7 +301,7 @@ for room_no in tqdm(divided_rooms[parallel_batch_no]):
 
     room.add_source(fakesource_rooms[room_id]["source_pos"][0])
 
-    # We can have 2 more different type of arrays in the training set circular array DIRHA corpus, and cube array voice home.
+    # We can have 2 more different type of arrays in the training set circular array DIRHA corpus, and cube array voice home, although they are 2 mic ula but you have to change the directivity for each of the respective dataset.
 
     mic_locs = np.c_[
         receiver_rooms[room_id]["barycenter_mic"][0],

@@ -4,6 +4,10 @@ import random
 import h5py
 from scipy.spatial import distance
 from tqdm import tqdm
+#import receiver_defination_voicehome2
+import receiver_defination_DIRHA
+#import receiver_defination_starss22
+from yaml.loader import SafeLoader
 
 # Generate room configuration.
 # These room configurations is used by pysofamyroom to generate RIR's.
@@ -65,191 +69,72 @@ class util_room:
         coeff = round(random.uniform(0.2, 1), 2)
         return [coeff for x in range(36)]
 
-    def get_absorption_coeff(self):
+    def get_absorption_coeff(self,realistic_walls=False):
         # Coin-flip to get the different absorption profiles
 
         # Unrealistic walls D-1_0000
 
-        abs_coeff_val = round(random.uniform(0.02, 0.50), 2)
-        abs_coeff_wall = np.ones((6, 6)) * abs_coeff_val
+        if realistic_walls == False:
+            abs_coeff_val=round(random.uniform(0.02,0.50),2)
+            abs_coeff_wall=np.ones((6,6))*abs_coeff_val
 
         # Realistic walls
         # id reflective walls = 7
         # absorbant wall = 8
+        else:
+            no_reflective_walls = random.choice([0, 1, 2, 3, 4, 5, 6])
+            walls_profile = np.array([8 for i in range(6)])
+            id_reflective = np.random.choice(
+                [0, 1, 2, 3, 4, 5], size=no_reflective_walls, replace=False
+            )
+            walls_profile[id_reflective] = 7
 
-        """
-        no_reflective_walls=random.choice([0,1,2,3,4,5,6])
-        walls_profile=np.array([8 for i in range(6)])
-        id_reflective=np.random.choice([0,1,2,3,4,5],size=no_reflective_walls,replace=False)
-        walls_profile[id_reflective]=7
-
-        abs_coeff_wall=np.empty((6,6))
-        for i,a in enumerate(walls_profile):
-            if a == 7: #Reflective Profile
-                abs_coeff_val=round(random.uniform(0.01, 0.12), 2)
-                abs_coeff_wall[i,:]=[abs_coeff_val]*6
-            elif a == 8:
-                f_o_c=random.choice([1,2]) #Removed 0 wall profile.
-                if f_o_c == 0:
-                    abs_coeff_val=[round(random.uniform(0.01, 0.50), 2), round(random.uniform(0.01, 0.50), 2),
-                                   round(random.uniform(0.01, 0.30), 2), round(random.uniform(0.01, 0.12), 2),
-                                   round(random.uniform(0.01, 0.12), 2), round(random.uniform(0.01, 0.12), 2)]
-                    abs_coeff_wall[i,:]=abs_coeff_val
-                elif f_o_c == 1:
-                    abs_coeff_val=[round(random.uniform(0.01, 0.70), 2), round(random.uniform(0.15, 1.00), 2),
-                                    round(random.uniform(0.40, 1.00), 2), round(random.uniform(0.40, 1.00), 2),
-                                    round(random.uniform(0.40, 1.00), 2), round(random.uniform(0.30, 1.00), 2)]
-                    abs_coeff_wall[i,:]=abs_coeff_val
-                else:
-                    abs_coeff_val=[round(random.uniform(0.01, 0.20), 2), round(random.uniform(0.01, 0.30), 2),
-                                  round(random.uniform(0.05, 0.50), 2), round(random.uniform(0.15, 0.60), 2),
-                                  round(random.uniform(0.25, 0.75), 2), round(random.uniform(0.30, 0.80), 2)]
-                    abs_coeff_wall[i,:]=abs_coeff_val
-        """
+            abs_coeff_wall = np.empty((6, 6))
+            for i, a in enumerate(walls_profile):
+                if a == 7:  # Reflective Profile
+                    abs_coeff_val = round(random.uniform(0.01, 0.12), 2)
+                    abs_coeff_wall[i, :] = [abs_coeff_val] * 6
+                elif a == 8:
+                    f_o_c = random.choice([1, 2])  # Removed 0 wall profile.
+                    if f_o_c == 0:
+                        abs_coeff_val = [
+                            round(random.uniform(0.01, 0.50), 2),
+                            round(random.uniform(0.01, 0.50), 2),
+                            round(random.uniform(0.01, 0.30), 2),
+                            round(random.uniform(0.01, 0.12), 2),
+                            round(random.uniform(0.01, 0.12), 2),
+                            round(random.uniform(0.01, 0.12), 2),
+                        ]
+                        abs_coeff_wall[i, :] = abs_coeff_val
+                    elif f_o_c == 1:
+                        abs_coeff_val = [
+                            round(random.uniform(0.01, 0.70), 2),
+                            round(random.uniform(0.15, 1.00), 2),
+                            round(random.uniform(0.40, 1.00), 2),
+                            round(random.uniform(0.40, 1.00), 2),
+                            round(random.uniform(0.40, 1.00), 2),
+                            round(random.uniform(0.30, 1.00), 2),
+                        ]
+                        abs_coeff_wall[i, :] = abs_coeff_val
+                    else:
+                        abs_coeff_val = [
+                            round(random.uniform(0.01, 0.20), 2),
+                            round(random.uniform(0.01, 0.30), 2),
+                            round(random.uniform(0.05, 0.50), 2),
+                            round(random.uniform(0.15, 0.60), 2),
+                            round(random.uniform(0.25, 0.75), 2),
+                            round(random.uniform(0.30, 0.80), 2),
+                        ]
+                        abs_coeff_wall[i, :] = abs_coeff_val
 
         return abs_coeff_wall.tolist()
 
-
-# Generate receivers position
-
-
-class util_receiver:
-    def __init__(self):
-        self.dic_receiver = {}
-
-    def rotation_directivity(self):
-        m_x = np.random.normal(loc=0, scale=1, size=1)
-        m_y = np.random.normal(loc=0, scale=1, size=1)
-        m_z = np.random.normal(loc=0, scale=1, size=1)
-
-        abs_ = np.sqrt(m_x ** 2 + m_y ** 2 + m_z ** 2)
-
-        # cart to deg
-        azi_, col_ = cart2sphere((m_x / abs_), (m_y / abs_), (m_z / abs_))
-
-        return azi_, col_
-
-    def mic_defination_array(self, rotation_matrix, barycenter):
-
-        # STARSS22 mic array
-        dcase_arr = np.zeros((3, 2))
-        dcase_arr[:, 0] = [0.02432757, 0.02432757, 0.02409021]
-        dcase_arr[:, 1] = [0.02432757, -0.02432757, -0.02409021]
-
-        panel_1_mic_1 = np.matmul(rotation_matrix, dcase_arr[:, 0])
-        panel_1_mic_2 = np.matmul(rotation_matrix, dcase_arr[:, 1])
-
-        return (
-            panel_1_mic_1 + barycenter,
-            panel_1_mic_2 + barycenter,
-            ((panel_1_mic_1 + barycenter) + (panel_1_mic_2 + barycenter)) / 2,
-        )
-
-    def generate_receivers_rooms(
-        self,
-        room_dimension,
-        different_no_receivers,
-        saftey_distance,
-        room_id,
-        mic_in_ula=None,
-    ):
-        a = different_no_receivers
-
-        li_bc = np.empty((a, 3))  # list for the bary center
-        # li_ypr=np.empty((a,2)) # list for the ypr of the barycenter
-        mic_pos = np.empty((a, 2, 3))  # viewpoints x mics x coordinate
-        li_bc_mic = np.empty((a, 3))
-        mic_pos_ypr = np.empty((a, 2, 2))  # viewpoints x mics x directivity ypr
-
-        for x in range(different_no_receivers):
-
-            # Random barycenter coordinates selection , within the saftey distance from the walls of the room
-
-            barycenter = np.array(
-                [
-                    round(
-                        random.uniform(0.2, (room_dimension[0] - saftey_distance)), 3
-                    ),
-                    round(
-                        random.uniform(0.2, (room_dimension[1] - saftey_distance)), 3
-                    ),
-                    round(
-                        random.uniform(0.2, (room_dimension[2] - saftey_distance)), 3
-                    ),
-                ]
-            )
-
-            # Rotation of the microphone array (x-z) direction parallel to the ground.
-
-            azimuth_rotation, elevation_rotation = self.rotation_directivity()
-            # rot=random.randint(0,360)
-            barycenter_ypr = [
-                0,
-                0,
-                0,
-            ]  # random.randint(0,360) Can also be selected from the unit vector selection.
-
-            y, p, r = barycenter_ypr[0], barycenter_ypr[1], barycenter_ypr[2]
-            rotation_mat_1 = np.array(
-                [
-                    np.cos(np.pi * (y) / 180) * np.cos(np.pi * (p) / 180),
-                    np.cos(np.pi * (y) / 180)
-                    * np.sin(np.pi * (p) / 180)
-                    * np.sin(np.pi * (r) / 180)
-                    - np.sin(np.pi * (y) / 180) * np.cos(np.pi * (r) / 180),
-                    np.cos(np.pi * (y) / 180)
-                    * np.sin(np.pi * (p) / 180)
-                    * np.cos(np.pi * (r) / 180)
-                    + np.sin(np.pi * (y) / 180) * np.sin(np.pi * (r) / 180),
-                ]
-            )
-            rotation_mat_2 = np.array(
-                [
-                    np.sin(np.pi * (y) / 180) * np.cos(np.pi * (p) / 180),
-                    np.sin(np.pi * (y) / 180)
-                    * np.sin(np.pi * (p) / 180)
-                    * np.sin(np.pi * (r) / 180)
-                    + np.cos(np.pi * (y) / 180) * np.cos(np.pi * (r) / 180),
-                    np.sin(np.pi * (y) / 180)
-                    * np.sin(np.pi * (p) / 180)
-                    * np.cos(np.pi * (r) / 180)
-                    - np.cos(np.pi * (y) / 180) * np.sin(np.pi * (r) / 180),
-                ]
-            )
-            rotation_mat_3 = np.array(
-                [
-                    -np.sin(np.pi * (p) / 180),
-                    np.cos(np.pi * (p) / 180) * np.sin(np.pi * (r) / 180),
-                    np.cos(np.pi * (p) / 180) * np.cos(np.pi * (r) / 180),
-                ]
-            )
-            rotation_mat = np.array(
-                [rotation_mat_1, rotation_mat_2, rotation_mat_3]
-            )  # 3*3 rotation matrice.
-
-            mic_pos_1, mic_pos_2, mic_bc = self.mic_defination_array(
-                rotation_mat, barycenter
-            )
-            mic_pos[x, 0, :] = mic_pos_1
-            mic_pos[x, 1, :] = mic_pos_2
-            li_bc[x, :] = barycenter
-            li_bc_mic[x, :] = mic_bc
-            mic_pos_ypr[x, 0, :] = [0, 0]
-            mic_pos_ypr[x, 1, :] = [0, 0]
-
-        return mic_pos, li_bc, li_bc_mic, mic_pos_ypr
-        # Rotation of the directivity pattern, every microphone will have a different directivity, thus there would be (3,3) rotation every micrphone array will have one directivity assoiciated with it for.
-
-        # li_ypr=np.array([[random.randint(-180,180),random.randint(0,180)] for x in range(5)]).reshape(5,2)
 
 
 # Generate real and fake sources for the simulation.
 
 
 class util_source:
-    def __init__(self):
-        # self.description=['omnidirectional','cardioid']
-        self.description = ["Genelec_8020", "Yamaha_DXR8", "HATS_4128C"]
 
     def generate_source_room(
         self, room_dimension, different_no_sources, saftey_distance, barycenter
@@ -283,7 +168,10 @@ class util_source:
             tmp_distance_1 = distance.euclidean(tmp_cord, barycenter[0, :])
             # tmp_distance_2=distance.euclidean(tmp_cord,barycenter[1,:])
             # tmp_distance_3=distance.euclidean(tmp_cord,barycenter[2,:])
-            # until the distance between the source and the barycenter is greater than 0.3, we keep on finding the new coordinates for the source.
+
+            ###############################################################################################################################################
+            # Until the distance between the source and the "Array" barycenter is greater than 0.3, we keep on finding the new coordinates for the source.#
+            ###############################################################################################################################################
 
             while (
                 tmp_distance_1 < 0.6
@@ -305,7 +193,8 @@ class util_source:
             ypr_source[i, :] = [random.randint(-180, 180), 0]
             # description_source.append(random.sample(self.description,1))
 
-        return ll_source, ypr_source  # ,description_source
+        # Retruns source positions and the ypr roation of the source
+        return ll_source, ypr_source
 
     def fake_source_rooom(
         self, room_dimension, different_no_sources, saftey_distance, barycenter
@@ -358,10 +247,27 @@ class util_source:
         return ll_source
 
 
-class conf_files(util_room, util_receiver):
-    def __init__(self, number_of_rooms, name_of_the_dataset):
+class conf_files():
+    def __init__(self,number_of_rooms,realistic_walls,fs,reference_frequency,air_absorption,max_order,ray_tracing,min_phase,humidity,temprature,no_of_rec_room,no_of_src_room,saftey_distance,name_of_the_dataset,source_dir_list,rec_dirs):
         self.number_rooms = number_of_rooms
-        self.receiver_file = util_receiver()
+        self.realistic_walls=realistic_walls
+        self.fs=fs
+        self.reference_frequency=reference_frequency
+        self.air_absorption=air_absorption
+        self.max_order=max_order
+        self.ray_tracing=ray_tracing
+        self.min_phase=min_phase
+        self.humidity=humidity
+        self.temprature=temprature
+        self.no_of_rec_room=no_of_rec_room
+        self.no_of_src_room=no_of_src_room
+        self.saftey_distance=saftey_distance
+        self.name_of_the_dataset=name_of_the_dataset
+        self.source_dir_list=source_dir_list
+        self.rec_dirs=rec_dirs
+
+
+        self.receiver_file = receiver_defination_DIRHA.util_receiver()
         self.source_file = util_source()
         self.util_room = util_room()
         self.params_file()
@@ -370,12 +276,12 @@ class conf_files(util_room, util_receiver):
     def params_file(self):
         dict_file = {
             "simulation_params": {
-                "fs": 16000,
-                "referencefrequency": 125,
-                "air_absorption": True,
-                "max_order": 20,
-                "ray_tracing": False,
-                "min_phase": False,
+                "fs": self.fs,
+                "referencefrequency": self.reference_frequency,
+                "air_absorption": self.air_absorption,
+                "max_order": self.max_order,
+                "ray_tracing": self.ray_tracing,
+                "min_phase": self.min_phase,
             }
         }
         with open("conf_sim_params.yml", "w") as file:
@@ -386,13 +292,11 @@ class conf_files(util_room, util_receiver):
         dict_file_receiver = {}
         dict_file_source = {}
         dict_file_noise_source = {}
-        humidity = 0.42
-        temprature = 20.0
-        reference_freq = 125
-        no_of_reciver_per_room = 1
-        no_of_source_per_room = 3
+        reference_freq = self.reference_frequency
+        no_of_reciver_per_room = self.no_of_rec_room
+        no_of_source_per_room = self.no_of_src_room
         saftey_distance = (
-            0.2  # Saftey distance between source and microphone with the room walls.
+            self.saftey_distance  # Saftey distance between source and microphone with the room walls.
         )
 
         # rooms_already_done=30000
@@ -415,11 +319,12 @@ class conf_files(util_room, util_receiver):
             ]
             dict_file["room_" + str(x)]["surface"][
                 "absorption"
-            ] = self.util_room.get_absorption_coeff()
+            ] = self.util_room.get_absorption_coeff(self.realistic_walls)
             dict_file["room_" + str(x)]["surface"][
                 "diffusion"
             ] = self.util_room.get_diffusion_coeff()
 
+            # Generate receiver postions , array barycenter, roation of individual mics,
             (
                 rec_pos,
                 li_bc,
@@ -430,14 +335,18 @@ class conf_files(util_room, util_receiver):
                 no_of_reciver_per_room,
                 saftey_distance,
                 "room_" + str(x),
-            )  # random.choice([2,3]) for x in range(no_of_reciver_per_room)
+            )
+             # random.choice([2,3]) for x in range(no_of_reciver_per_room)
             # li_rec_1,li_rec_2,li_bc=self.receiver_file.generate_receivers_rooms(return_dimension,no_of_reciver_per_room,saftey_distance,'room_' + str(x))
 
+            # Generate source position and barycenter
             li_sc, li_sc_ypr = self.source_file.generate_source_room(
                 return_dimension, no_of_source_per_room, saftey_distance, li_bc
             )
 
             # li_sc=self.source_file.generate_source_room(return_dimension,no_of_source_per_room,saftey_distance,li_bc)
+
+            # Generate noise source
 
             li_nsc = self.source_file.fake_source_rooom(
                 return_dimension, 1, saftey_distance, li_bc
@@ -447,12 +356,14 @@ class conf_files(util_room, util_receiver):
                 "barycenter": li_bc.tolist(),
                 "rec_pos": rec_pos.tolist(),
                 "barycenter_mic": li_bc_mic.tolist(),
-            }  #'rec_pos_ypr':rec_pos_ypr.tolist(),'directivity':['EM_32_5','EM_32_9']}
+                "rec_pos_ypr": rec_pos_ypr.tolist(),
+                'directivity':list(self.rec_dirs)}
 
             # dict_file_receiver['room_' + str(x)] = {'barycenter':li_bc.tolist(),'mic_pos_1':li_rec_1.tolist(),'mic_pos_2':li_rec_2.tolist()}
 
             # dict_file_source['room_' + str(x)]={'source_pos':li_sc.tolist(),'source_ypr':li_sc_ypr.tolist(),'directivity':random.choice(["CARDIOID","HYPERCARDIOID","SUBCARDIOID"])}
 
+            # Calculate GT DoA
             azimuth = calculate_source_doa_1d(
                 rec_pos, li_bc, li_sc, li_bc_mic, no_of_rec_room=1, no_of_source_room=3
             )
@@ -461,26 +372,52 @@ class conf_files(util_room, util_receiver):
                 "source_pos": li_sc.tolist(),
                 "source_ypr": li_sc_ypr.tolist(),
                 "theta_1d": azimuth.tolist(),
-                "directivity": random.sample(
-                    ["HATS_4128C", "Genelec_8020", "Yamaha_DXR8"], 3
-                ),
-            }
+                'directivity':random.sample(self.source_dir_list,k=len(self.source_dir_list))}
 
             # dict_file_source['room_' + str(x)]={'source_pos':li_sc.tolist()}
 
             dict_file_noise_source["room_" + str(x)] = {"source_pos": li_nsc.tolist()}
 
-        with open("conf_room_setup_D7_0100.yml", "w") as file:
+        with open("conf_room_setup_"+self.name_of_the_dataset+".yml", "w") as file:
             documents = yaml.dump(dict_file, file)
-        with open("conf_receivers_D7_0100.yml", "w") as file_1:
+        with open("conf_receivers_"+self.name_of_the_dataset+".yml", "w") as file_1:
             documents = yaml.dump(dict_file_receiver, file_1)
-        with open("conf_source_D7_0100.yml", "w") as file_2:
+        with open("conf_source_"+self.name_of_the_dataset+".yml", "w") as file_2:
             documents = yaml.dump(dict_file_source, file_2)
-        with open("conf_noise_source_D7_0100.yml", "w") as file_3:
+        with open("conf_noise_source_"+self.name_of_the_dataset+".yml", "w") as file_3:
             documents = yaml.dump(dict_file_noise_source, file_3)
 
 
-conf_files(40000, "test")
+
+if __name__ == '__main__':
+
+    def generate_parameters():
+
+        with open("params.yml","r") as f:
+                data=yaml.load(f, Loader=SafeLoader)
+                number_of_rooms=data["Number_of_rooms"]
+                realistic_walls=data["Realistic_walls"]
+                fs=data["fs"]
+                reference_frequency=data["reference_freq"]
+                air_absorption=data["air_absorption"]
+                max_order=data["max_order"]
+                ray_tracing=data["ray_tracing"]
+                min_phase=data["min_phase"]
+                humidity=data["humidity"]
+                temprature=data["temprature"]
+                no_of_rec_room=data["no_of_rec_room"]
+                no_of_src_room=data["no_of_src_room"]
+                saftey_distance=data["saftey_distance"]
+                name_of_the_dataset=data["name_of_the_dataset"]
+                source_dir_list=data["source_dir_list"]
+                rec_dirs=data["receiver_dirs"]
+
+        conf_files(number_of_rooms,realistic_walls,fs,reference_frequency,air_absorption,max_order,ray_tracing,min_phase,humidity,temprature,no_of_rec_room,no_of_src_room,saftey_distance,name_of_the_dataset,source_dir_list,rec_dirs)
+
+    generate_parameters()
+
+
+
 
 
 # Extra Chunk of code comments
