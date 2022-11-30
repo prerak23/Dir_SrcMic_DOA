@@ -19,7 +19,7 @@ source_setup -> [source position, Source directivity azimuth and elevation],
 
 receiver_setup -> [receiver position, receiver directivity azimuth and elevation] 
 
-noise_source_setup -> [source position] File consisting of an extra source posistined in the room setup, used particularly for generating speech mixtures with variable snr's.
+noise_source_setup -> [source position] File consisting of positions of extra source placed in the room setup, used particularly for generating speech mixtures with variable snr's.
 
 The script depends on params.yml file, from where the distribution of simulation parameters can be tweaked.
 
