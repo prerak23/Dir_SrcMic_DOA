@@ -4,9 +4,11 @@ import random
 import h5py
 from scipy.spatial import distance
 from tqdm import tqdm
-#import receiver_defination_voicehome2
+
+# import receiver_defination_voicehome2
 import receiver_defination_DIRHA
-#import receiver_defination_starss22
+
+# import receiver_defination_starss22
 from yaml.loader import SafeLoader
 
 # Generate room configuration.
@@ -69,14 +71,14 @@ class util_room:
         coeff = round(random.uniform(0.2, 1), 2)
         return [coeff for x in range(36)]
 
-    def get_absorption_coeff(self,realistic_walls=False):
+    def get_absorption_coeff(self, realistic_walls=False):
         # Coin-flip to get the different absorption profiles
 
         # Unrealistic walls D-1_0000
 
         if realistic_walls == False:
-            abs_coeff_val=round(random.uniform(0.02,0.50),2)
-            abs_coeff_wall=np.ones((6,6))*abs_coeff_val
+            abs_coeff_val = round(random.uniform(0.02, 0.50), 2)
+            abs_coeff_wall = np.ones((6, 6)) * abs_coeff_val
 
         # Realistic walls
         # id reflective walls = 7
@@ -130,12 +132,10 @@ class util_room:
         return abs_coeff_wall.tolist()
 
 
-
 # Generate real and fake sources for the simulation.
 
 
 class util_source:
-
     def generate_source_room(
         self, room_dimension, different_no_sources, saftey_distance, barycenter
     ):
@@ -247,25 +247,42 @@ class util_source:
         return ll_source
 
 
-class conf_files():
-    def __init__(self,number_of_rooms,realistic_walls,fs,reference_frequency,air_absorption,max_order,ray_tracing,min_phase,humidity,temprature,no_of_rec_room,no_of_src_room,saftey_distance,name_of_the_dataset,source_dir_list,rec_dirs):
+class conf_files:
+    def __init__(
+        self,
+        number_of_rooms,
+        realistic_walls,
+        fs,
+        reference_frequency,
+        air_absorption,
+        max_order,
+        ray_tracing,
+        min_phase,
+        humidity,
+        temprature,
+        no_of_rec_room,
+        no_of_src_room,
+        saftey_distance,
+        name_of_the_dataset,
+        source_dir_list,
+        rec_dirs,
+    ):
         self.number_rooms = number_of_rooms
-        self.realistic_walls=realistic_walls
-        self.fs=fs
-        self.reference_frequency=reference_frequency
-        self.air_absorption=air_absorption
-        self.max_order=max_order
-        self.ray_tracing=ray_tracing
-        self.min_phase=min_phase
-        self.humidity=humidity
-        self.temprature=temprature
-        self.no_of_rec_room=no_of_rec_room
-        self.no_of_src_room=no_of_src_room
-        self.saftey_distance=saftey_distance
-        self.name_of_the_dataset=name_of_the_dataset
-        self.source_dir_list=source_dir_list
-        self.rec_dirs=rec_dirs
-
+        self.realistic_walls = realistic_walls
+        self.fs = fs
+        self.reference_frequency = reference_frequency
+        self.air_absorption = air_absorption
+        self.max_order = max_order
+        self.ray_tracing = ray_tracing
+        self.min_phase = min_phase
+        self.humidity = humidity
+        self.temprature = temprature
+        self.no_of_rec_room = no_of_rec_room
+        self.no_of_src_room = no_of_src_room
+        self.saftey_distance = saftey_distance
+        self.name_of_the_dataset = name_of_the_dataset
+        self.source_dir_list = source_dir_list
+        self.rec_dirs = rec_dirs
 
         self.receiver_file = receiver_defination_DIRHA.util_receiver()
         self.source_file = util_source()
@@ -336,7 +353,7 @@ class conf_files():
                 saftey_distance,
                 "room_" + str(x),
             )
-             # random.choice([2,3]) for x in range(no_of_reciver_per_room)
+            # random.choice([2,3]) for x in range(no_of_reciver_per_room)
             # li_rec_1,li_rec_2,li_bc=self.receiver_file.generate_receivers_rooms(return_dimension,no_of_reciver_per_room,saftey_distance,'room_' + str(x))
 
             # Generate source position and barycenter
@@ -357,7 +374,8 @@ class conf_files():
                 "rec_pos": rec_pos.tolist(),
                 "barycenter_mic": li_bc_mic.tolist(),
                 "rec_pos_ypr": rec_pos_ypr.tolist(),
-                'directivity':list(self.rec_dirs)}
+                "directivity": list(self.rec_dirs),
+            }
 
             # dict_file_receiver['room_' + str(x)] = {'barycenter':li_bc.tolist(),'mic_pos_1':li_rec_1.tolist(),'mic_pos_2':li_rec_2.tolist()}
 
@@ -372,52 +390,70 @@ class conf_files():
                 "source_pos": li_sc.tolist(),
                 "source_ypr": li_sc_ypr.tolist(),
                 "theta_1d": azimuth.tolist(),
-                'directivity':random.sample(self.source_dir_list,k=len(self.source_dir_list))}
+                "directivity": random.sample(
+                    self.source_dir_list, k=len(self.source_dir_list)
+                ),
+            }
 
             # dict_file_source['room_' + str(x)]={'source_pos':li_sc.tolist()}
 
             dict_file_noise_source["room_" + str(x)] = {"source_pos": li_nsc.tolist()}
 
-        with open("conf_room_setup_"+self.name_of_the_dataset+".yml", "w") as file:
+        with open("conf_room_setup_" + self.name_of_the_dataset + ".yml", "w") as file:
             documents = yaml.dump(dict_file, file)
-        with open("conf_receivers_"+self.name_of_the_dataset+".yml", "w") as file_1:
+        with open("conf_receivers_" + self.name_of_the_dataset + ".yml", "w") as file_1:
             documents = yaml.dump(dict_file_receiver, file_1)
-        with open("conf_source_"+self.name_of_the_dataset+".yml", "w") as file_2:
+        with open("conf_source_" + self.name_of_the_dataset + ".yml", "w") as file_2:
             documents = yaml.dump(dict_file_source, file_2)
-        with open("conf_noise_source_"+self.name_of_the_dataset+".yml", "w") as file_3:
+        with open(
+            "conf_noise_source_" + self.name_of_the_dataset + ".yml", "w"
+        ) as file_3:
             documents = yaml.dump(dict_file_noise_source, file_3)
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     def generate_parameters():
 
-        with open("params.yml","r") as f:
-                data=yaml.load(f, Loader=SafeLoader)
-                number_of_rooms=data["Number_of_rooms"]
-                realistic_walls=data["Realistic_walls"]
-                fs=data["fs"]
-                reference_frequency=data["reference_freq"]
-                air_absorption=data["air_absorption"]
-                max_order=data["max_order"]
-                ray_tracing=data["ray_tracing"]
-                min_phase=data["min_phase"]
-                humidity=data["humidity"]
-                temprature=data["temprature"]
-                no_of_rec_room=data["no_of_rec_room"]
-                no_of_src_room=data["no_of_src_room"]
-                saftey_distance=data["saftey_distance"]
-                name_of_the_dataset=data["name_of_the_dataset"]
-                source_dir_list=data["source_dir_list"]
-                rec_dirs=data["receiver_dirs"]
+        with open("params.yml", "r") as f:
+            data = yaml.load(f, Loader=SafeLoader)
+            number_of_rooms = data["Number_of_rooms"]
+            realistic_walls = data["Realistic_walls"]
+            fs = data["fs"]
+            reference_frequency = data["reference_freq"]
+            air_absorption = data["air_absorption"]
+            max_order = data["max_order"]
+            ray_tracing = data["ray_tracing"]
+            min_phase = data["min_phase"]
+            humidity = data["humidity"]
+            temprature = data["temprature"]
+            no_of_rec_room = data["no_of_rec_room"]
+            no_of_src_room = data["no_of_src_room"]
+            saftey_distance = data["saftey_distance"]
+            name_of_the_dataset = data["name_of_the_dataset"]
+            source_dir_list = data["source_dir_list"]
+            rec_dirs = data["receiver_dirs"]
 
-        conf_files(number_of_rooms,realistic_walls,fs,reference_frequency,air_absorption,max_order,ray_tracing,min_phase,humidity,temprature,no_of_rec_room,no_of_src_room,saftey_distance,name_of_the_dataset,source_dir_list,rec_dirs)
+        conf_files(
+            number_of_rooms,
+            realistic_walls,
+            fs,
+            reference_frequency,
+            air_absorption,
+            max_order,
+            ray_tracing,
+            min_phase,
+            humidity,
+            temprature,
+            no_of_rec_room,
+            no_of_src_room,
+            saftey_distance,
+            name_of_the_dataset,
+            source_dir_list,
+            rec_dirs,
+        )
 
     generate_parameters()
-
-
-
 
 
 # Extra Chunk of code comments

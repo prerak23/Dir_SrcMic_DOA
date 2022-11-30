@@ -68,46 +68,45 @@ class util_receiver:
                 ]
             )
 
-            pick_random_surface=np.random.randint(3)
+            pick_random_surface = np.random.randint(3)
             if pick_random_surface == 0:
-                seq=[1,2]
+                seq = [1, 2]
             elif pick_random_surface == 1:
-                seq=[0,2]
+                seq = [0, 2]
             else:
-                seq=[0,1]
+                seq = [0, 1]
 
-            wall_switch=np.random.randint(2)
-            barycenter_copy=np.copy(barycenter)
+            wall_switch = np.random.randint(2)
+            barycenter_copy = np.copy(barycenter)
 
             if wall_switch == 0:
-                barycenter_copy[pick_random_surface]=0
+                barycenter_copy[pick_random_surface] = 0
             else:
-                barycenter_copy[pick_random_surface]=room_dimension[pick_random_surface]-0.05
+                barycenter_copy[pick_random_surface] = (
+                    room_dimension[pick_random_surface] - 0.05
+                )
 
-            mic_pos[x,0,:]=barycenter_copy
+            mic_pos[x, 0, :] = barycenter_copy
 
-            seq_no=np.random.randint(2)
-            seq_id=seq[seq_no]
+            seq_no = np.random.randint(2)
+            seq_id = seq[seq_no]
 
-
-
-            if barycenter_copy[seq_id]+0.30 < room_dimension[seq_id] :
-                barycenter_copy[seq_id]+=0.30
+            if barycenter_copy[seq_id] + 0.30 < room_dimension[seq_id]:
+                barycenter_copy[seq_id] += 0.30
             else:
                 if seq_no == 0:
-                    seq_id=seq[1]
-                    barycenter_copy[seq_id]+=0.30
+                    seq_id = seq[1]
+                    barycenter_copy[seq_id] += 0.30
                 else:
-                    seq_id=seq[0]
-                    barycenter_copy[seq_id]+=0.30
+                    seq_id = seq[0]
+                    barycenter_copy[seq_id] += 0.30
 
+            mic_pos[x, 1, :] = barycenter_copy
 
-            mic_pos[x,1,:]=barycenter_copy
+            mic_bc = (mic_pos[x, 0, :] + mic_pos[x, 1, :]) / 2
+            # Rotation of the microphone array (x-z) direction parallel to the ground.
 
-            mic_bc=(mic_pos[x,0,:]+mic_pos[x,1,:])/2
-            #Rotation of the microphone array (x-z) direction parallel to the ground.
-
-            '''
+            """
             azimuth_rotation_bc, elevation_rotation_bc = self.rotation_directivity()
 
 
@@ -160,7 +159,7 @@ class util_receiver:
             )
             mic_pos[x, 0, :] = mic_pos_1
             mic_pos[x, 1, :] = mic_pos_2
-            '''
+            """
 
             li_bc[x, :] = barycenter
             li_bc_mic[x, :] = mic_bc

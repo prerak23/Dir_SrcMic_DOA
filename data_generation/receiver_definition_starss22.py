@@ -1,7 +1,9 @@
 import numpy as np
 import random
 from generate_simulator_params import cart2sphere
+
 # Generate receivers position
+
 
 class util_receiver:
     def __init__(self):

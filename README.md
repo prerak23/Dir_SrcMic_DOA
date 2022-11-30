@@ -23,7 +23,7 @@ noise_source_setup -> [source position] File consisting of an extra source posis
 
 The script depends on params.yml file, from where the distribution of simulation parameters can be tweaked.
 
-b) receiver_defination_DIRHA.py, receiver_defination_STARSS22, receiver_defination_VOICEHOME2
+b) receiver_definition_DIRHA.py, receiver_definition_STARSS22, receiver_definition_VOICEHOME2
 
 These scripts consists defination of respective arrays used in the real datasets.
 
@@ -55,7 +55,7 @@ Consists scripts that retreive real data if provided with correct directory of t
 
 - get_DIRHA_data.py
 
-- get_voice_home_data.py
+- get_voicehome2_data.py
 
 - get_starss22_data.py
 

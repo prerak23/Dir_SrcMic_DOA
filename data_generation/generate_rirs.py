@@ -135,13 +135,15 @@ dir_obj_Dmic_2 = DIRPATRir(
     fs=16000,
 )
 
-#Process in batch of 100 rooms each
+# Process in batch of 100 rooms each
 
-parallel_batch_no = int(sys.argv[1]) #The script take in argument the batch id, for example : in 20000 rooms there will be 200 batch ids for every batch of 100 rooms.
+parallel_batch_no = int(
+    sys.argv[1]
+)  # The script take in argument the batch id, for example : in 20000 rooms there will be 200 batch ids for every batch of 100 rooms.
 
 no_of_rooms = 20000  # Total number of rooms
 no_of_source = 3  # Number of source per room
-parallel_jobs = 100 # Parallel jobs, 100 rooms each
+parallel_jobs = 100  # Parallel jobs, 100 rooms each
 divided_rooms = []
 divi_arr = []
 
@@ -154,7 +156,7 @@ for divi in range(no_of_rooms + 1):
         divi_arr = []
         divi_arr.append(divi)
 
-#Divided rooms [[0,99],[100,199],[200,299]] etc.
+# Divided rooms [[0,99],[100,199],[200,299]] etc.
 
 file_name_rirs = (
     "/srv/storage/talc3@talc-data.nancy/multispeech/calcul/users/psrivast/ICASSP/dcase_arr/EM_32/generated_rirs_EM_32_rooms_"
@@ -179,7 +181,7 @@ rirs_save = Output_file.create_group("rirs")
 
 rirs_save_anno = Output_anno_file.create_group("rirs_save_anno")
 
-#Open simulation parameter files.
+# Open simulation parameter files.
 
 with open(
     "/home/psrivastava/source_localization/doa_estimation/dcase_mic_arr/data_generation/EM_32/conf_room_setup_EM32.yml"

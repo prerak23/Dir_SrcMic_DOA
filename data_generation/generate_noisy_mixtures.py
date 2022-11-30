@@ -40,7 +40,7 @@ path_speech = "/srv/storage/talc@talc-data.nancy/multispeech/corpus/speech_recog
 speech_files = []
 num = 0
 
-#Process in batch of 100 rooms each
+# Process in batch of 100 rooms each
 
 parallel_batch_no = int(sys.argv[1])
 
